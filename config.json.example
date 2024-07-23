@@ -1,0 +1,5 @@
+{
+  "coupon": "ExampleCoupon123",
+  "expired": "2024-12-31 23:59",
+  "template": "{coupon} [{expired}]"
+}
