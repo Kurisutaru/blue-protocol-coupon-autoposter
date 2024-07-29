@@ -6,6 +6,7 @@ import sys
 import tarfile
 import traceback
 import zipfile
+import logging
 
 import colorama
 import requests
@@ -33,12 +34,18 @@ class LoggerType:
     def data(self):
         return self.sborder + self.color + self.title + colorama.Style.RESET_ALL + self.eborder
 
+    @property
+    def data_plain(self):
+        return self.sborder + self.title + self.eborder
+
 
 ERROR = LoggerType('[ ', ' ]', 'FAILED', colorama.Fore.RED, True)
 OK = LoggerType('[   ', '   ]', 'OK', colorama.Fore.GREEN, False)
 INFO = LoggerType('[  ', '  ]', 'INFO', colorama.Fore.LIGHTBLACK_EX, True)
 DEVINFO = LoggerType('[ ', ' ]', 'DEBUG', colorama.Fore.CYAN, True)
 WARN = LoggerType('[  ', '  ]', 'WARN', colorama.Fore.YELLOW, False)
+
+logger = logging.getLogger(__name__)
 
 
 def console_log(text='', logger_type=None, fill_text=None):
@@ -55,6 +62,8 @@ def console_log(text='', logger_type=None, fill_text=None):
             print(logger_type.data + ' ' + logger_type.color + text[ni:] + colorama.Style.RESET_ALL)
         else:
             print(logger_type.data + ' ' + text[ni:])
+
+        logger.warning(logger_type.data_plain + ' ' + text[ni:])
     else:
         print(text)
 
@@ -167,14 +176,15 @@ class WebDriverInstaller(object):
         if self.platform[0] == "linux":
             path = None
             for executable in (
-            "google-chrome", "google-chrome-stable", "google-chrome-beta", "google-chrome-dev", "chromium-browser",
-            "chromium"):
+                    "google-chrome", "google-chrome-stable", "google-chrome-beta", "google-chrome-dev",
+                    "chromium-browser",
+                    "chromium"):
                 path = shutil.which(executable)
                 if path is not None:
                     with subprocess.Popen([path, "--version"], stdout=subprocess.PIPE) as proc:
                         chrome_version = \
-                        proc.stdout.read().decode("utf-8").replace("Chromium", "").replace("Google Chrome",
-                                                                                           "").strip().split()[0]
+                            proc.stdout.read().decode("utf-8").replace("Chromium", "").replace("Google Chrome",
+                                                                                               "").strip().split()[0]
         elif self.platform[0] == "mac":
             process = subprocess.Popen(["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "--version"],
                                        stdout=subprocess.PIPE)
@@ -257,27 +267,27 @@ class WebDriverInstaller(object):
         if url.find('.tar.gz') != -1:
             file_extension = '.tar.gz'
         # downloading
-        zip_path = path.replace('\\', '/')+'/data'+file_extension
+        zip_path = path.replace('\\', '/') + '/data' + file_extension
         f = open(zip_path, 'wb')
         f.write(requests.get(url).content)
         f.close()
         if edge:
-            webdriver_name = 'msedgedriver' # macOS, linux
+            webdriver_name = 'msedgedriver'  # macOS, linux
         elif firefox:
-            webdriver_name = 'geckodriver' # macOS, linux
+            webdriver_name = 'geckodriver'  # macOS, linux
         else:
-            webdriver_name = 'chromedriver' # macOS, linux
-        if self.platform[0].startswith('win'): # windows
+            webdriver_name = 'chromedriver'  # macOS, linux
+        if self.platform[0].startswith('win'):  # windows
             webdriver_name += '.exe'
         # extracting
         if file_extension == '.zip':
             with zipfile.ZipFile(zip_path, 'r') as zip:
                 webdriver_zip_path = ''
-                if not edge and not firefox: # Google Chrome
-                    if len(zip.namelist()[0].split('/')) > 1: # for new Google Chrome webdriver zip format
-                        webdriver_zip_path = zip.namelist()[0].split('/')[0]+'/'
-                with open(path+'/'+webdriver_name, 'wb') as f: # for Google Chrome and Microsoft Edge
-                    f.write(zip.read(webdriver_zip_path+webdriver_name))
+                if not edge and not firefox:  # Google Chrome
+                    if len(zip.namelist()[0].split('/')) > 1:  # for new Google Chrome webdriver zip format
+                        webdriver_zip_path = zip.namelist()[0].split('/')[0] + '/'
+                with open(path + '/' + webdriver_name, 'wb') as f:  # for Google Chrome and Microsoft Edge
+                    f.write(zip.read(webdriver_zip_path + webdriver_name))
         elif file_extension == '.tar.gz':
             tar = tarfile.open(zip_path)
             tar.extractall()

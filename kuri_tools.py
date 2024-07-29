@@ -1,4 +1,19 @@
 import tools
+import os
+import datetime as dt
+import time
+import logging
+
+
+def init_logger():
+    log_file = os.getcwd() + "/logs"
+    if not os.path.exists(log_file):
+        os.makedirs(log_file)
+    log_file = log_file + "/" + dt.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d') + ".log"
+    file_handler = logging.FileHandler("{0}".format(log_file))
+    root_logger = logging.getLogger()
+    root_logger.addHandler(file_handler)
+    root_logger.setLevel(logging.WARN)
 
 
 def log_ok(text=""):

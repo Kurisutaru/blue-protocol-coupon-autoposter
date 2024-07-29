@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import sys
 import time
 import traceback
 from datetime import datetime
@@ -116,6 +117,10 @@ try:
         time.sleep(3)
         exit(0)
 
+    kuri_tools.init_logger()
+    kuri_tools.log_info(f"Script runtime at {datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}, with "
+                        f"parameter {', '.join(sys.argv[1:])}")
+
     # initialization and configuration of everything necessary for work
     webdriver_installer = tools.WebDriverInstaller()
 
@@ -156,7 +161,6 @@ try:
         exit(0)
 
     full_body = json_data['template'].format(**json_data)
-
     driver = kuri_tools.WebDriver(browser_name=browser_name, browser_path=browser_path)
 
     # Posting to Game8.jp
