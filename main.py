@@ -117,7 +117,6 @@ try:
         time.sleep(3)
         exit(0)
 
-    kuri_tools.init_logger()
     kuri_tools.log_info(f"Script runtime at {datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}, with "
                         f"parameter {', '.join(sys.argv[1:])}")
 

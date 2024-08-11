@@ -14,6 +14,8 @@ from selenium.webdriver import Chrome, ChromeOptions, ChromeService
 from selenium.webdriver import Edge, EdgeOptions, EdgeService
 from selenium.webdriver import Firefox, FirefoxOptions, FirefoxService
 
+import kuri_tools
+
 GET_EBN = 'document.getElementsByName'
 GET_EBCN = 'document.getElementsByClassName'
 GET_EBID = 'document.getElementById'
@@ -45,8 +47,6 @@ INFO = LoggerType('[  ', '  ]', 'INFO', colorama.Fore.LIGHTBLACK_EX, True)
 DEVINFO = LoggerType('[ ', ' ]', 'DEBUG', colorama.Fore.CYAN, True)
 WARN = LoggerType('[  ', '  ]', 'WARN', colorama.Fore.YELLOW, False)
 
-logger = logging.getLogger(__name__)
-
 
 def console_log(text='', logger_type=None, fill_text=None):
     if isinstance(logger_type, LoggerType):
@@ -63,7 +63,7 @@ def console_log(text='', logger_type=None, fill_text=None):
         else:
             print(logger_type.data + ' ' + text[ni:])
 
-        logger.warning(logger_type.data_plain + ' ' + text[ni:])
+        kuri_tools.write_to_log_file(logger_type.data_plain + ' ' + text[ni:])
     else:
         print(text)
 
